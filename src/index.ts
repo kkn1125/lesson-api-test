@@ -1,10 +1,21 @@
-import express from "express";
+import "reflect-metadata";
+import applicant from "@src/controller/applicant.controller";
+import coach from "@src/controller/coach.controller";
+import court from "@src/controller/court.controller";
+import schedule from "@src/controller/schedule.controller";
+import mariadbConfig from "@src/database/mariadb.config";
+import { BASE_API, PORT } from "@src/util/global";
 import cors from "cors";
-import { BASE_API, PORT } from "./util/global";
-import schedule from "./controller/schedule.controller";
-import applicant from "./controller/applicant.controller";
-import court from "./controller/court.controller";
-import coach from "./controller/coach.controller";
+import express from "express";
+
+mariadbConfig
+  .initialize()
+  .then(() => {
+    console.log("Data Source has been initialized!");
+  })
+  .catch((err) => {
+    console.error("Error during Data Source initialization: ", err);
+  });
 
 const app = express();
 

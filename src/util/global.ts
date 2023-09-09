@@ -11,10 +11,15 @@ dotenv.config({
 });
 
 export const IS_DEV = MODE === "development";
-
 export const HOST = process.env.HOST as string;
 export const PORT = Number(process.env.PORT) || 5000;
-
+export const TIME_ZONE = 1000 * 60 * 60 * 9;
+export const WEEK_TIME = 1000 * 60 * 60 * 24 * 7;
 export const BASE_API = "/api";
 
-export const TIME_ZONE = 9 * 60 * 60 * 1000;
+// database options
+export const DB_HOST = process.env.DB_HOST as string;
+export const DB_PORT = Number(process.env.DB_PORT) || 3306;
+export const DB_USERNAME = process.env.DB_USERNAME as string;
+export const DB_PASSWORD = process.env.DB_PASSWORD as string;
+export const DB_NAME = process.env.DB_NAME as string;

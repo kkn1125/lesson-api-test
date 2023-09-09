@@ -1,3 +1,6 @@
+import MariadbConfig from "@src/database/mariadb.config";
+import Schedule from "@src/entity/schedule.entity";
+import { Repository } from "typeorm";
 import { TIME_ZONE } from "../util/global";
 
 export const expLessonList = [
@@ -9,15 +12,25 @@ export const expLessonList = [
 export const regularLessonList = ["2023-09-01 13:00:00", "2023-09-02 10:00:00"];
 
 export default class ScheduleService {
-  generateScheduleTimes(start: string, end: string, interval: number) {
+  repository: Repository<Schedule> = MariadbConfig.getRepository(Schedule);
+
+  formatDashedDateTime = (time: Date) => {
+    return new Date(time.getTime() + TIME_ZONE)
+      .toISOString()
+      .replace("T", " ")
+      .slice(0, -5);
+  };
+
+  generateScheduleTimes(
+    start: string | Date,
+    end: string | Date,
+    interval: number
+  ) {
     const startTime = new Date(start);
     const endTime = new Date(end);
     const temp = [];
     while (startTime <= endTime) {
-      const datetime = new Date(startTime.getTime() + TIME_ZONE)
-        .toISOString()
-        .replace("T", " ")
-        .slice(0, -5);
+      const datetime = this.formatDashedDateTime(startTime);
       const time = datetime.split(" ").pop();
       if (this.workingTimes()[0] <= time && this.workingTimes()[1] >= time) {
         temp.push(datetime);
