@@ -58,19 +58,22 @@ describe("[스케줄 컨트롤러 테스트]", () => {
       // const newApplicant = await applicant.save();
 
       // court info
-      const availableCourt = await courtRepo.find({
-        relations: {
-          schedules: {
-            court: true,
-            coach: true,
-            applicant: true,
-          },
+      const courtNum = 1;
+      const availableCourt = await courtRepo.findOne({
+        where: {
+          num: courtNum,
         },
       });
-      console.log("availableCourt", availableCourt);
 
       // coach info
+      const coachName = "kimson";
+      const availableCoach = await coachRepo.findOne({
+        where: {
+          name: coachName,
+        },
+      });
 
+      console.log("available coach and court", availableCoach, availableCourt);
       // const schedules = await scheduleRepo.insert({
       //   applicant_id: newApplicant.id,
       // });

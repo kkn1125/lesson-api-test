@@ -23,8 +23,6 @@ export default class Schedule extends BaseEntity {
   duration: number;
   @Column()
   type: string;
-  @Column()
-  amount: number;
   @CreateDateColumn()
   created_at: string;
   @UpdateDateColumn()
