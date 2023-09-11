@@ -2,12 +2,17 @@
 //   // return lesson schedule list
 // }
 
+import Schedule from "@src/entity/schedule.entity";
 import ApplicantService from "@src/service/applicant.service";
+import CoachService from "@src/service/coach.service";
+import CourtService from "@src/service/court.service";
 import ScheduleService, {
   expLessonList,
   regularLessonList,
 } from "@src/service/schedule.service";
 
+const courtService = new CourtService();
+const coachService = new CoachService();
 const scheduleService = new ScheduleService();
 const applicantService = new ApplicantService();
 
@@ -15,8 +20,8 @@ describe("[스케줄] 생성 및 필터 테스트", () => {
   describe("아침 7시부터 저녁 17시까지 레슨 가능 일정 출력", () => {
     it("[SUCCESS]", () => {
       const list = scheduleService.generateScheduleTimes(
-        "2023-09-08 07:00:00",
-        "2023-09-09 17:00:00",
+        "2023-09-12 07:00:00",
+        "2023-09-13 17:00:00",
         30
       );
       expect(list.length).toStrictEqual(42);
@@ -26,37 +31,35 @@ describe("[스케줄] 생성 및 필터 테스트", () => {
   describe("체험형 레슨 필터", () => {
     it("[SUCCESS] ", () => {
       const list = scheduleService.generateScheduleTimes(
-        "2023-09-08 07:00:00",
-        "2023-09-09 17:00:00",
+        "2023-09-12 07:00:00",
+        "2023-09-13 17:00:00",
         30
       );
       const availableLessonList = scheduleService.filterExperienceLesson(
         list,
-        expLessonList
+        scheduleService.timeMap(expLessonList as Schedule[])
       );
-      console.log("availableLessonList", availableLessonList);
-      expect(availableLessonList.length).toStrictEqual(42 - 3);
+      expect(availableLessonList.length).toStrictEqual(42 - 4);
     });
   });
 
   describe("체험형 + 정규형 레슨 필터", () => {
     it("[SUCCESS]", () => {
       const list = scheduleService.generateScheduleTimes(
-        "2023-09-08 07:00:00",
-        "2023-09-09 17:00:00",
+        "2023-09-12 07:00:00",
+        "2023-09-13 17:00:00",
         30
       );
       const availableLessonList = scheduleService.filterExperienceLesson(
         list,
-        expLessonList
+        scheduleService.timeMap(expLessonList as Schedule[])
       );
 
       const availableLessonResults = scheduleService.filterRegularLesson(
         availableLessonList,
-        regularLessonList
+        scheduleService.timeMap(regularLessonList as Schedule[])
       );
-      console.log("availableLessonResults", availableLessonResults);
-      expect(availableLessonResults.length).toStrictEqual(42 - 3 - 2);
+      expect(availableLessonResults.length).toStrictEqual(42 - 4 - 2);
     });
   });
 });

@@ -27,57 +27,78 @@ afterAll(async () => {
   console.log("Mariadb config destroyed!");
 });
 
-let scheduleList = [];
-
 describe("[스케줄 컨트롤러 테스트]", () => {
   describe("스케줄 유휴 코트 찾기", () => {
     // beforeAll(async () => {
     //   await scheduleRepo.delete(scheduleList.map((schedule) => schedule.id));
     // });
     it("[SUCCESS] 레포지토리 정의", () => {
+      expect(scheduleService).toBeDefined();
       expect(scheduleRepo).toBeDefined();
     });
     it("[SUCCESS] 스케줄 찾기", async () => {
-      const schedules = await scheduleRepo.find();
-      expect(schedules.length).toStrictEqual(0);
-    });
-    it("[SUCCESS] 스케줄 생성", async () => {
-      // lesson info
-      const time = ["2023-09-10 12:00:00"];
-      const amount = time.length;
-      const type = "irregular";
-      const duration = 30;
-
-      // applicant info
-      // const applicant = new Applicant();
-      // const userAccount = applicantService.getOneTimeUserAccount();
-      // applicant.user_id = userAccount.user_id;
-      // applicant.user_password = userAccount.user_password;
-      // applicant.name = "kimson";
-      // applicant.phone_number = "010-2020-1234";
-      // const newApplicant = await applicant.save();
-
-      // court info
-      const courtNum = 1;
-      const availableCourt = await courtRepo.findOne({
-        where: {
-          num: courtNum,
-        },
-      });
-
-      // coach info
       const coachName = "kimson";
-      const availableCoach = await coachRepo.findOne({
+      const irregularSchedules = await scheduleRepo.find({
         where: {
-          name: coachName,
+          type: "irregular",
+          coach: {
+            name: coachName,
+          },
         },
       });
+      const regularSchedules = await scheduleRepo.find({
+        where: {
+          type: "regular",
+          coach: {
+            name: coachName,
+          },
+        },
+      });
+      const availableLessonSchedules =
+        scheduleService.findFilteredAvailableSchedules(
+          irregularSchedules,
+          regularSchedules
+        );
 
-      console.log("available coach and court", availableCoach, availableCourt);
-      // const schedules = await scheduleRepo.insert({
-      //   applicant_id: newApplicant.id,
-      // });
+      expect(availableLessonSchedules.length).toStrictEqual(147 - 2);
     });
+    // it("[SUCCESS] 스케줄 생성", async () => {
+    //   // lesson info
+    //   const time = ["2023-09-10 12:00:00"];
+    //   const type = "irregular";
+    //   const duration = 30;
+
+    //   // court info
+    //   const courtNum = 1;
+    //   const availableCourt = await courtRepo.findOne({
+    //     where: {
+    //       num: courtNum,
+    //     },
+    //   });
+
+    //   // coach info
+    //   const coachName = "kimson";
+    //   const availableCoach = await coachRepo.findOne({
+    //     where: {
+    //       name: coachName,
+    //     },
+    //   });
+
+    //   const doneList = await scheduleService.createSchedule(
+    //     availableCourt.id,
+    //     availableCoach.id,
+    //     {
+    //       time,
+    //       type,
+    //       duration,
+    //     }
+    //   );
+
+    //   console.log("doneList", doneList);
+
+    //   expect(doneList.length).toStrictEqual(2);
+    // });
+    it("[FAIL] 스케줄 생성 트랜젝션 취소", async () => {});
   });
 });
 
@@ -88,7 +109,39 @@ describe("[신청자 컨트롤러 테스트]", () => {
     });
     it("[SUCCESS] 신청자 찾기", async () => {
       const schedules = await applicantRepo.find();
-      expect(schedules.length).toStrictEqual(1);
+      expect(schedules.length).toStrictEqual(2);
+    });
+  });
+});
+
+describe("코트 비즈니스 로직", () => {
+  describe("유휴 코트 조회", () => {
+    it("[SUCCESS]", async () => {
+      const time = "2023-09-12 12:00:00";
+      const usingCourts = await courtService.repository.find({
+        where: {
+          schedules: {
+            time: time,
+          },
+        },
+      });
+      const availableCourts = courtService.findAvailableCourts(usingCourts);
+
+      expect(availableCourts.length).toStrictEqual(4);
+      console.log("사용가능한 첫 번째 코트", availableCourts[0]);
+      expect(availableCourts[0]).toStrictEqual(2);
+    });
+  });
+});
+
+describe("코치 비즈니스 로직", () => {
+  describe("유휴 코치 조회", () => {
+    it("[SUCCESS]", async () => {
+      const name = "kimson";
+      const time = "2023-09-12 12:00:00";
+
+      const isAvailableCoach = await coachService.isAvailableCoach(name, time);
+      expect(isAvailableCoach).toBeFalsy();
     });
   });
 });

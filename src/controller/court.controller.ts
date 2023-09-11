@@ -1,12 +1,12 @@
 import express from "express";
-const schedule = express.Router();
+const court = express.Router();
 
-schedule.use((req, res, next) => {
+court.use((req, res, next) => {
   console.log("Time: ", Date.now());
   next();
 });
 
-schedule.get("/", async (req, res) => {
+court.get("/", async (req, res) => {
   console.log("get request courts");
   res.send(
     JSON.stringify({
@@ -16,4 +16,4 @@ schedule.get("/", async (req, res) => {
   );
 });
 
-export default schedule;
+export default court;

@@ -1,20 +1,15 @@
-// import Coach from "@src/entity/coach.entity";
-// import Court from "@src/entity/court.entity";
-// import Schedule from "@src/entity/schedule.entity";
-// import { Repository } from "typeorm";
-// import Applicant from "../entity/applicant.entity";
+declare type LessonType = "irregular" | "regular";
 
-// declare global {
-//   namespace Express {
-//     export interface Request {
-//       repository?: {
-//         applicant: Repository<Applicant>;
-//         coach: Reository<Coach>;
-//         court: Reository<Court>;
-//         schedule: Reository<Schedule>;
-//       };
-//     }
-//   }
-// }
+declare interface LessonApplyType {
+  coachName: string;
+  time: string[];
+  duration: number;
+  phone_number: string;
+  name: string;
+  type: LessonType;
+}
 
-// export {};
+declare interface LessonUserInfo {
+  id: string;
+  password: string;
+}

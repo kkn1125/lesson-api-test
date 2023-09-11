@@ -23,3 +23,12 @@ export const DB_PORT = Number(process.env.DB_PORT) || 3306;
 export const DB_USERNAME = process.env.DB_USERNAME as string;
 export const DB_PASSWORD = process.env.DB_PASSWORD as string;
 export const DB_NAME = process.env.DB_NAME as string;
+export const DAY_TO_KOR = {
+  0: "일",
+  1: "월",
+  2: "화",
+  3: "수",
+  4: "목",
+  5: "금",
+  6: "토",
+};

@@ -17,7 +17,7 @@ export default new DataSource({
   database: DB_NAME,
   synchronize: false,
   logging: true,
-  entities: ["src/entity/*.entity.ts"],
+  entities: ["src/entity/*.ts"],
   subscribers: [],
   migrations: [],
   namingStrategy: new SnakeNamingStrategy(),
