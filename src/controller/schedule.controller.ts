@@ -86,6 +86,12 @@ schedule.get("/id/:id", async (req, res) => {
       })
     );
   }
+  if (userSchedule[0].applicant.user_password !== password) {
+    return res.status(400).json({
+      ok: false,
+      message: "wrong user info",
+    });
+  }
 
   const scheduleTimes = userSchedule
     .map((schedule) => [
@@ -301,6 +307,52 @@ schedule.put("/id/:id", async (req, res) => {
       data: scheduleSaves,
     })
   );
+});
+
+schedule.delete("/id/:id", async (req, res) => {
+  const { id } = req.params;
+  const { password } = req.body;
+
+  const schedules = await scheduleService.repository.find({
+    where: {
+      applicant: {
+        user_id: id,
+        user_password: password,
+      },
+    },
+    relations: {
+      applicant: true,
+      court: true,
+      coach: true,
+    },
+  });
+
+  if (schedules.length === 0) {
+    return res.status(404).json({
+      ok: false,
+      message: "not found",
+    });
+  }
+
+  if (schedules[0].applicant.user_password !== password) {
+    return res.status(400).json({
+      ok: false,
+      message: "wrong user info",
+    });
+  }
+
+  const applicant = schedules[0].applicant;
+
+  for await (const schedule of schedules) {
+    schedule.remove();
+  }
+
+  await applicant.remove();
+
+  return res.status(200).json({
+    ok: true,
+    message: "success",
+  });
 });
 
 export default schedule;
